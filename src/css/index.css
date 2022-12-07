@@ -1,0 +1,48 @@
+/* Header Component */
+header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+header span {
+    font-weight: normal;
+}
+
+/* Hero Component */
+.hero {
+    display: flex;
+    gap: 2rem;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    padding: min(max(8vw, 1rem), 3rem);
+}
+
+.hero > * {
+    width: 100%;
+    height: 100%;
+}
+
+.hero__content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    flex-basis: 50%;
+}
+
+.hero__content > h1 {
+    margin: 2rem 0 0 0;
+}
+
+.hero__content > p {
+    margin: 1rem 0 0 0;
+    color: #666;
+}
+
+.hero__canvas {
+    height: 100%;
+    background-color: #eee;
+    flex-grow: 0;
+}
