@@ -64,7 +64,7 @@ export default class Preloader {
                 onComplete: () => {
                     this.container.remove();
                 },
-                delay: 2,
+                delay: 1,
             }
         );
     }

@@ -1,9 +1,11 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial } from "three";
+import { BoxGeometry, DirectionalLight, Mesh, MeshBasicMaterial } from "three";
 
 import Preloader from "./engine/Preloader";
 import Canvas from "./engine/Canvas";
 import "./css/globals.css";
 import "./css/index.css";
+import GardenModel from "./components/GardenModel";
+import { createComponent } from "./engine/Component";
 
 // initialize assets
 const preloader = new Preloader({
@@ -13,21 +15,24 @@ const preloader = new Preloader({
 
 await preloader.load();
 preloader.dispose();
-// class Box extends Component {
-//     name = "box";
-
-//     constructor() {
-//         super();
-//         this.object = new Mesh(
-//             new BoxGeometry(1, 1, 1),
-//             new MeshBasicMaterial({ color: "red" })
-//         );
-//     }
-// }
 
 const canvas = new Canvas({
     container: ".hero__canvas",
     controls: true,
 });
+
+canvas.add(
+    new GardenModel({
+        gltf: preloader.assets["/garden/scene.gltf"],
+    })
+
+    // createComponent(() => {
+    //     const directionalLight = new DirectionalLight(0xffffff, 1);
+    //     directionalLight.position.set(5, 5, 5);
+    //     directionalLight.castShadow = true;
+    //     return directionalLight;
+    // })
+    // createComponent()("light")
+);
 
 canvas.core();

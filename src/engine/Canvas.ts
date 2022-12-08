@@ -1,4 +1,10 @@
-import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import {
+    Clock,
+    PCFSoftShadowMap,
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer,
+} from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Component from "./Component";
 
@@ -20,6 +26,8 @@ export default class Canvas {
     private animationId: number = 0;
     private controls: OrbitControls | undefined;
     private components: Component[] = [];
+
+    clock: Clock = new Clock(false);
 
     constructor({ container, controls }: CanvasProps) {
         this.container = $(container)! as HTMLElement;
@@ -44,6 +52,10 @@ export default class Canvas {
     private createRenderer() {
         const renderer = new WebGLRenderer();
         renderer.setSize(this.size.width, this.size.height);
+
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = PCFSoftShadowMap;
+
         this.container.appendChild(renderer.domElement);
 
         return renderer;
@@ -64,7 +76,7 @@ export default class Canvas {
     private createCamera() {
         const r = this.size.aspectRatio;
         const camera = new PerspectiveCamera(75, r, 0.1, 1000);
-        camera.position.z = 5;
+        camera.position.z = 15;
 
         return camera;
     }
@@ -77,6 +89,9 @@ export default class Canvas {
         for (const object of objects) {
             this.components.push(object);
             this.scene.add(object.object);
+
+            object.canvas = this;
+            object.onMount();
         }
     }
 
@@ -86,7 +101,7 @@ export default class Canvas {
      */
     remove(name: string) {
         // remove from component tree
-        this.components = this.components.filter((c) => c.name !== name);
+        this.components = this.components.filter((c) => c.object.name !== name);
 
         // remove from scene
         const object = this.scene.getObjectByName(name);
@@ -122,11 +137,13 @@ export default class Canvas {
      * Start core animation loop
      */
     core() {
+        this.clock.start();
+
         const animate = () => {
             // update everything
             this.controls?.update();
             for (const object of this.components) {
-                object.update(this);
+                object.update();
             }
 
             // render everything
@@ -142,5 +159,6 @@ export default class Canvas {
      */
     pause() {
         cancelAnimationFrame(this.animationId);
+        this.clock.stop();
     }
 }

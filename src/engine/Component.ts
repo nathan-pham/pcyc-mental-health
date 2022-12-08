@@ -2,8 +2,21 @@ import { Group, Object3D } from "three";
 import Canvas from "./Canvas";
 
 export default class Component {
-    name: string = "Untitled Component";
     object!: Object3D | Group;
+    canvas!: Canvas;
 
-    update(canvas: Canvas) {}
+    onMount() {}
+
+    update() {}
 }
+
+export const createComponent = (objectCreator: () => Object3D) => {
+    class FunctionComponent extends Component {
+        constructor() {
+            super();
+            this.object = objectCreator();
+        }
+    }
+
+    return new FunctionComponent();
+};
