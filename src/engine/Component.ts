@@ -7,6 +7,8 @@ export default class Component {
 
     onMount() {}
 
+    onUnmount() {}
+
     update() {}
 }
 

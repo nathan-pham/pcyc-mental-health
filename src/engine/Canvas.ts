@@ -1,7 +1,11 @@
 import {
     Clock,
+    Fog,
+    Intersection,
+    Object3D,
     PCFSoftShadowMap,
     PerspectiveCamera,
+    Raycaster,
     Scene,
     Vector2,
     WebGLRenderer,
@@ -10,6 +14,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import gsap from "gsap";
 
 import Component from "./Component";
 import { $ } from "./html";
@@ -25,19 +30,22 @@ export default class Canvas {
 
     // three.js components
     private renderer: WebGLRenderer;
-    private camera: PerspectiveCamera;
-    private scene: Scene;
     private composer: EffectComposer;
 
+    public camera: PerspectiveCamera;
+    public scene: Scene;
+    public controls: OrbitControls | undefined;
+
     private animationId: number = 0;
-    private controls: OrbitControls | undefined;
     private components: Component[] = [];
 
+    state: Record<string, any> = {};
+
     clock = new Clock(false);
-    mouse = {
-        x: 0,
-        y: 0,
-    };
+    raycaster = new Raycaster();
+    intersections: Intersection<Object3D>[] = [];
+    pointer = new Vector2();
+    pointerDown = false;
 
     constructor({ container, controls }: CanvasProps) {
         this.container = $(container)! as HTMLElement;
@@ -95,7 +103,9 @@ export default class Canvas {
      * @returns Three.js scene
      */
     private createScene() {
-        return new Scene();
+        const scene = new Scene();
+        scene.fog = new Fog(0x000000, 0.1, 50);
+        return scene;
     }
 
     /**
@@ -116,11 +126,11 @@ export default class Canvas {
      */
     add(...objects: Component[]) {
         for (const object of objects) {
-            this.components.push(object);
-            this.scene.add(object.object);
-
             object.canvas = this;
             object.onMount();
+
+            this.components.push(object);
+            this.scene.add(object.object);
         }
     }
 
@@ -129,8 +139,13 @@ export default class Canvas {
      * @param name object's name
      */
     remove(name: string) {
-        // remove from component tree
-        this.components = this.components.filter((c) => c.object.name !== name);
+        // remove from components array
+        const componentIdx = this.components.findIndex(
+            (c) => c.object.name === name
+        );
+        if (componentIdx < 0) return;
+        this.components.splice(componentIdx, 1);
+        this.components[componentIdx].onUnmount();
 
         // remove from scene
         const object = this.scene.getObjectByName(name);
@@ -163,9 +178,22 @@ export default class Canvas {
             this.camera.updateProjectionMatrix();
         });
 
-        addEventListener("mousemove", (e) => {
-            this.mouse.x = e.clientX - this.containerBbox.left;
-            this.mouse.y = e.clientY - this.containerBbox.top;
+        addEventListener("pointermove", (e) => {
+            this.pointer.x =
+                ((e.clientX - this.containerBbox.left) / this.size.width) * 2 -
+                1;
+
+            this.pointer.y =
+                -((e.clientY - this.containerBbox.top) / this.size.height) * 2 +
+                1;
+        });
+
+        addEventListener("pointerdown", () => {
+            this.pointerDown = true;
+        });
+
+        addEventListener("pointerup", () => {
+            this.pointerDown = false;
         });
     }
 
@@ -182,6 +210,13 @@ export default class Canvas {
                 object.update();
             }
 
+            // update raycaster
+            this.raycaster.setFromCamera(this.pointer, this.camera);
+            this.intersections = this.raycaster.intersectObjects(
+                this.scene.children,
+                true
+            );
+
             // render everything
             this.renderer.render(this.scene, this.camera);
             this.composer.render();
@@ -197,5 +232,38 @@ export default class Canvas {
     pause() {
         cancelAnimationFrame(this.animationId);
         this.clock.stop();
+    }
+
+    /**
+     * Animate current view to a new position
+     * @param position - Camera position
+     * @param rotation - Camera rotation
+     * @param target - Orbital controls target view
+     */
+    animateView(position: number[], rotation: number[], target: number[]) {
+        gsap.timeline()
+            .to(this.camera.position, {
+                x: position[0],
+                y: position[1],
+                z: position[2],
+                ease: "Expo.easeInOut",
+            })
+            .to(this.camera.rotation, {
+                x: rotation[0],
+                y: rotation[1],
+                z: rotation[2],
+                ease: "Expo.easeInOut",
+            });
+
+        if (this.controls) {
+            gsap.to(this.controls.target, {
+                x: target[0],
+                y: target[1],
+                z: target[2],
+                ease: "Expo.easeInOut",
+            });
+
+            this.controls.update();
+        }
     }
 }

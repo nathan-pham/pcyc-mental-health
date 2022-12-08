@@ -1,11 +1,12 @@
-import { BoxGeometry, DirectionalLight, Mesh, MeshBasicMaterial } from "three";
-
-import Preloader from "./engine/Preloader";
-import Canvas from "./engine/Canvas";
 import "./css/globals.css";
 import "./css/index.css";
+
+import Preloader from "./components/view/Preloader";
+import Canvas from "./engine/Canvas";
 import GardenModel from "./components/GardenModel";
-import { createComponent } from "./engine/Component";
+
+import GardenFloor from "./components/GardenFloor";
+import { defaultView } from "./sceneData";
 
 // initialize assets
 const preloader = new Preloader({
@@ -24,15 +25,29 @@ const canvas = new Canvas({
 canvas.add(
     new GardenModel({
         gltf: preloader.assets["/garden/scene.gltf"],
-    })
-
-    // createComponent(() => {
-    //     const directionalLight = new DirectionalLight(0xffffff, 1);
-    //     directionalLight.position.set(5, 5, 5);
-    //     directionalLight.castShadow = true;
-    //     return directionalLight;
-    // })
-    // createComponent()("light")
+    }),
+    new GardenFloor()
 );
+
+canvas.animateView(
+    defaultView.position,
+    defaultView.rotation,
+    defaultView.target
+);
+
+window.generatePos = () => {
+    const r = (a: number[]) => a.map((a) => parseFloat(a.toFixed(2)));
+    console.log(
+        JSON.stringify({
+            position: r(canvas.camera.position.toArray()),
+            rotation: r(
+                canvas.camera.rotation
+                    .toArray()
+                    .filter((t) => typeof t === "number") as number[]
+            ),
+            target: r(canvas.controls!.target.toArray()),
+        })
+    );
+};
 
 canvas.core();

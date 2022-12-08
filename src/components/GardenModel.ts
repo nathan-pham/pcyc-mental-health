@@ -1,10 +1,9 @@
-import { Object3D, PointLight, SpotLight, Vector3 } from "three";
+import { Object3D, Vector3 } from "three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import Component, { createComponent } from "../engine/Component";
 
-const lanternNames = [2, 9, 10, 11, 12, 13].map(
-    (name) => `Cylinder${name.toString().padStart(3, "0")}`
-);
+import Component from "../engine/Component";
+import LanternLight from "./LanternLight";
+import { defaultView, lanternData, lanternNames } from "../sceneData";
 
 interface GardenModelProps {
     gltf: GLTF;
@@ -17,18 +16,24 @@ export default class GardenModel extends Component {
     private animationOffsets: number[] = [];
     private initialPositions: Vector3[] = [];
 
+    private targetRotationX: number = 0;
+    private selectedLantern: string | null = null;
+
     constructor({ gltf }: GardenModelProps) {
         super();
         this.gltf = gltf;
         this.object = this.gltf.scene;
     }
 
-    onMount() {
+    private enableShadows() {
+        // manage lighting
         this.object.castShadow = true;
         this.object.receiveShadow = true;
         this.object.position.y = -2.5;
         this.object.updateMatrixWorld(true);
+    }
 
+    private initLanterns() {
         // get lanterns, lantern positions, and animation offsets
         for (const name of lanternNames) {
             const lantern = this.object.getObjectByName(name);
@@ -40,44 +45,59 @@ export default class GardenModel extends Component {
                 const position = new Vector3(0, 0, 0);
                 lantern.getWorldPosition(position);
 
-                this.canvas.add(
-                    createComponent(() => {
-                        const pointLight = new PointLight(0xffffff, 0.07);
-                        pointLight.castShadow = true;
-                        pointLight.position.set(
-                            position.x,
-                            position.y,
-                            position.z
-                        );
-                        return pointLight;
-                    }),
-                    createComponent(() => {
-                        // create spotlight
-                        const spotLight = new SpotLight(0xffffff, 0.4);
-                        spotLight.angle = Math.PI / 6;
-                        spotLight.castShadow = true;
-                        spotLight.position.set(
-                            position.x,
-                            position.y,
-                            position.z
-                        );
-
-                        // point straight down
-                        const target = spotLight.target;
-                        target.position.set(position.x, -100, position.y);
-                        target.updateMatrix();
-                        target.updateMatrixWorld();
-
-                        this.spotLights.push(spotLight);
-
-                        return spotLight;
-                    })
-                );
+                // add lighting to lanterns
+                const lanternLight = new LanternLight({ position });
+                this.spotLights.push(lanternLight.getSpotLight());
+                this.canvas.add(lanternLight);
             }
         }
     }
 
-    update() {
+    onMount() {
+        this.enableShadows();
+        this.initLanterns();
+
+        // add event listeners
+        addEventListener("pointerdown", () => {
+            console.log("pointer down");
+            if (
+                this.selectedLantern &&
+                lanternData.hasOwnProperty(this.selectedLantern)
+            ) {
+                const lantern = lanternData[this.selectedLantern];
+                this.canvas.animateView(
+                    lantern.position,
+                    lantern.rotation,
+                    lantern.target
+                );
+            } else {
+                console.log("test");
+                this.canvas.animateView(
+                    defaultView.position,
+                    defaultView.rotation,
+                    defaultView.target
+                );
+            }
+        });
+    }
+
+    private updateSelectedLantern() {
+        // reset selected lantern
+        if (this.canvas.pointerDown) {
+            this.selectedLantern = null;
+        }
+
+        // get selected lantern
+        for (const intersection of this.canvas.intersections) {
+            for (const name of lanternNames) {
+                if (intersection.object.name.includes(name)) {
+                    this.selectedLantern = name;
+                }
+            }
+        }
+    }
+
+    private updateLanternPositions() {
         for (let i = 0; i < this.lanterns.length; i++) {
             const lantern = this.lanterns[i];
             const spotLight = this.spotLights[i];
@@ -95,5 +115,10 @@ export default class GardenModel extends Component {
             lantern.getWorldPosition(position);
             spotLight.position.y = position.y;
         }
+    }
+
+    update() {
+        this.updateSelectedLantern();
+        this.updateLanternPositions();
     }
 }

@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { $ } from "./html";
+import { $ } from "../../engine/html";
 
 interface PreloaderProps {
     container: string;
