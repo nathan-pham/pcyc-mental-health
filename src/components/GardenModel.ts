@@ -53,7 +53,7 @@ export default class GardenModel extends Component {
                     }),
                     createComponent(() => {
                         // create spotlight
-                        const spotLight = new SpotLight(0xffffff, 0.5);
+                        const spotLight = new SpotLight(0xffffff, 0.4);
                         spotLight.angle = Math.PI / 6;
                         spotLight.castShadow = true;
                         spotLight.position.set(
