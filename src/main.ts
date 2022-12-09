@@ -7,32 +7,42 @@ import GardenModel from "./components/GardenModel";
 
 import GardenFloor from "./components/GardenFloor";
 import { defaultView } from "./sceneData";
+import MusicCanvas from "./components/view/MusicCanvas";
 
-// initialize assets
+// initialize classes
 const preloader = new Preloader({
     assetPaths: ["/garden/scene.gltf"],
 });
-
-await preloader.load();
-preloader.dispose();
 
 const canvas = new Canvas({
     container: ".hero__canvas",
     controls: true,
 });
 
+const music = new MusicCanvas({
+    container: ".hero__content__music",
+});
+
+// load assets
+await preloader.load();
+preloader.onComplete(() =>
+    canvas.animateView(
+        defaultView.position,
+        defaultView.rotation,
+        defaultView.target
+    )
+);
+preloader.dispose();
+
 canvas.add(
-    new GardenModel({
-        gltf: preloader.assets["/garden/scene.gltf"],
-    }),
+    // new GardenModel({
+    //     gltf: preloader.assets["/garden/scene.gltf"],
+    // }),
     new GardenFloor()
 );
 
-canvas.animateView(
-    defaultView.position,
-    defaultView.rotation,
-    defaultView.target
-);
+canvas.addView(canvas.cursor, music);
+canvas.core();
 
 window.generatePos = () => {
     const r = (a: number[]) => a.map((a) => parseFloat(a.toFixed(2)));
@@ -48,5 +58,3 @@ window.generatePos = () => {
         })
     );
 };
-
-canvas.core();

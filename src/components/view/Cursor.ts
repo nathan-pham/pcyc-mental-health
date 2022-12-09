@@ -1,15 +1,16 @@
 import { MathUtils, Vector2 } from "three";
+import ComponentView from "../../engine/ComponentView";
 import { $, $$ } from "../../engine/html";
 
-export default class Cursor {
+export default class Cursor extends ComponentView {
     private el: HTMLDivElement;
     private pos = new Vector2();
     private targetPos = new Vector2();
-    private animationId: number = 0;
 
     private initialSize: string;
 
     constructor() {
+        super();
         this.el = $(".cursor") as HTMLDivElement;
         this.initialSize = this.el.style.getPropertyValue("--size");
 
@@ -52,23 +53,13 @@ export default class Cursor {
         this.el.style.setProperty("--size", this.initialSize);
     }
 
-    core() {
-        const animate = () => {
-            this.animationId = requestAnimationFrame(animate);
+    update() {
+        this.pos.x = MathUtils.lerp(this.pos.x, this.targetPos.x, 0.1);
+        this.pos.y = MathUtils.lerp(this.pos.y, this.targetPos.y, 0.1);
 
-            this.pos.x = MathUtils.lerp(this.pos.x, this.targetPos.x, 0.1);
-            this.pos.y = MathUtils.lerp(this.pos.y, this.targetPos.y, 0.1);
-
-            const x = this.pos.x + "px";
-            const y = this.pos.y + "px";
-            this.el.style.left = x;
-            this.el.style.top = y;
-        };
-
-        this.animationId = requestAnimationFrame(animate);
-    }
-
-    pause() {
-        cancelAnimationFrame(this.animationId);
+        const x = this.pos.x + "px";
+        const y = this.pos.y + "px";
+        this.el.style.left = x;
+        this.el.style.top = y;
     }
 }

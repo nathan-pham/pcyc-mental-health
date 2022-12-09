@@ -20,6 +20,7 @@ import Component from "./Component";
 import { $ } from "./html";
 import Cursor from "../components/view/Cursor";
 import Pointer from "../components/Pointer";
+import ComponentView from "./ComponentView";
 
 interface CanvasProps {
     container: string;
@@ -39,6 +40,7 @@ export default class Canvas {
 
     private animationId: number = 0;
     private components: Component[] = [];
+    private componentViews: ComponentView[] = [];
 
     state: Record<string, any> = {};
 
@@ -46,8 +48,8 @@ export default class Canvas {
     raycaster = new Raycaster();
     intersections: Intersection<Object3D>[] = [];
 
-    cursor: Cursor;
-    pointer: Pointer;
+    cursor: Cursor; // html pretty view
+    pointer: Pointer; // actual 3d position
 
     constructor({ container, controls }: CanvasProps) {
         this.container = $(container)! as HTMLElement;
@@ -126,7 +128,7 @@ export default class Canvas {
 
     /**
      * Add a list of objects to the scene
-     * @param objects - List of component objects
+     * @param objects - List of Component objects
      */
     add(...objects: Component[]) {
         for (const object of objects) {
@@ -135,6 +137,17 @@ export default class Canvas {
 
             this.components.push(object);
             this.scene.add(object.object);
+        }
+    }
+
+    /**
+     * Add a list of view (html) components to the canvas animation
+     * Helps synchronize and reduce the number of requestAnimationFrames
+     * @param views - List of ComponentView objects
+     */
+    addView(...views: ComponentView[]) {
+        for (const view of views) {
+            this.componentViews.push(view);
         }
     }
 
@@ -181,7 +194,7 @@ export default class Canvas {
             this.camera.updateProjectionMatrix();
         });
 
-        this.cursor.core();
+        // this.addView(this.cursor);
         this.pointer.initEventListeners();
     }
 
@@ -202,6 +215,11 @@ export default class Canvas {
             // update controls
             this.controls?.update();
             for (const object of this.components) {
+                object.update();
+            }
+
+            // update other components
+            for (const object of this.componentViews) {
                 object.update();
             }
 

@@ -15,6 +15,8 @@ export default class Preloader {
     private assetPaths: string[] = [];
     private assetsLoaded: number = 0;
 
+    private onCompleteCb: () => void = () => {};
+
     constructor({ assetPaths }: PreloaderProps) {
         this.el = $(".preloader") as HTMLElement;
         this.elProgress = $(".preloader__progress") as HTMLElement;
@@ -51,6 +53,10 @@ export default class Preloader {
         });
     }
 
+    onComplete(onCompleteCb: () => void) {
+        this.onCompleteCb = onCompleteCb;
+    }
+
     dispose() {
         gsap.fromTo(
             this.el,
@@ -62,6 +68,7 @@ export default class Preloader {
                 ease: "Expo.easeInOut",
                 onComplete: () => {
                     this.el.remove();
+                    this.onCompleteCb();
                 },
                 delay: 1,
             }
