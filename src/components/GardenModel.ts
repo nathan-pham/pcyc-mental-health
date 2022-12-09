@@ -59,7 +59,6 @@ export default class GardenModel extends Component {
 
         // add event listeners
         addEventListener("pointerdown", () => {
-            console.log("pointer down");
             if (
                 this.selectedLantern &&
                 lanternData.hasOwnProperty(this.selectedLantern)
@@ -71,7 +70,6 @@ export default class GardenModel extends Component {
                     lantern.target
                 );
             } else {
-                console.log("test");
                 this.canvas.animateView(
                     defaultView.position,
                     defaultView.rotation,
@@ -81,13 +79,21 @@ export default class GardenModel extends Component {
         });
     }
 
-    private updateSelectedLantern() {
-        // reset selected lantern
-        if (this.canvas.pointerDown) {
-            this.selectedLantern = null;
+    private updateCursor() {
+        if (this.canvas.pointerInView()) {
+            if (this.selectedLantern) {
+                this.canvas.cursor.expand();
+                this.canvas.container.style.cursor = "pointer";
+            } else {
+                this.canvas.cursor.shrink();
+                this.canvas.container.style.cursor = "auto";
+            }
         }
+    }
 
+    private updateSelectedLantern() {
         // get selected lantern
+        this.selectedLantern = null;
         for (const intersection of this.canvas.intersections) {
             for (const name of lanternNames) {
                 if (intersection.object.name.includes(name)) {
@@ -120,5 +126,6 @@ export default class GardenModel extends Component {
     update() {
         this.updateSelectedLantern();
         this.updateLanternPositions();
+        this.updateCursor();
     }
 }

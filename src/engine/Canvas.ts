@@ -18,6 +18,7 @@ import gsap from "gsap";
 
 import Component from "./Component";
 import { $ } from "./html";
+import Cursor from "../components/view/Cursor";
 
 interface CanvasProps {
     container: string;
@@ -25,7 +26,7 @@ interface CanvasProps {
 }
 
 export default class Canvas {
-    private container: HTMLElement;
+    public readonly container: HTMLElement;
     private containerBbox: DOMRect;
 
     // three.js components
@@ -44,6 +45,9 @@ export default class Canvas {
     clock = new Clock(false);
     raycaster = new Raycaster();
     intersections: Intersection<Object3D>[] = [];
+
+    cursor = new Cursor();
+
     pointer = new Vector2();
     pointerDown = false;
 
@@ -65,6 +69,7 @@ export default class Canvas {
         }
 
         this.initEventListeners();
+        this.cursor.core();
     }
 
     private createComposer() {
@@ -179,13 +184,13 @@ export default class Canvas {
         });
 
         addEventListener("pointermove", (e) => {
-            this.pointer.x =
-                ((e.clientX - this.containerBbox.left) / this.size.width) * 2 -
-                1;
+            const x = e.clientX;
+            const y = e.clientY;
 
+            this.pointer.x =
+                ((x - this.containerBbox.left) / this.size.width) * 2 - 1;
             this.pointer.y =
-                -((e.clientY - this.containerBbox.top) / this.size.height) * 2 +
-                1;
+                -((y - this.containerBbox.top) / this.size.height) * 2 + 1;
         });
 
         addEventListener("pointerdown", () => {
@@ -204,12 +209,6 @@ export default class Canvas {
         this.clock.start();
 
         const animate = () => {
-            // update everything
-            this.controls?.update();
-            for (const object of this.components) {
-                object.update();
-            }
-
             // update raycaster
             this.raycaster.setFromCamera(this.pointer, this.camera);
             this.intersections = this.raycaster.intersectObjects(
@@ -217,7 +216,13 @@ export default class Canvas {
                 true
             );
 
-            // render everything
+            // update controls
+            this.controls?.update();
+            for (const object of this.components) {
+                object.update();
+            }
+
+            // render stuff
             this.renderer.render(this.scene, this.camera);
             this.composer.render();
             this.animationId = requestAnimationFrame(animate);
@@ -265,5 +270,14 @@ export default class Canvas {
 
             this.controls.update();
         }
+    }
+
+    pointerInView() {
+        return (
+            this.pointer.x >= -1 &&
+            this.pointer.x <= 1 &&
+            this.pointer.y >= -1 &&
+            this.pointer.y <= 1
+        );
     }
 }

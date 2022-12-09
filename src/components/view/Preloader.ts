@@ -3,22 +3,21 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { $ } from "../../engine/html";
 
 interface PreloaderProps {
-    container: string;
     assetPaths: string[];
 }
 
 export default class Preloader {
     assets: Record<string, any> = {};
 
-    private container: HTMLElement;
-    private containerProgress: HTMLElement;
+    private el: HTMLElement;
+    private elProgress: HTMLElement;
 
     private assetPaths: string[] = [];
     private assetsLoaded: number = 0;
 
     constructor({ assetPaths }: PreloaderProps) {
-        this.container = $(".preloader") as HTMLElement;
-        this.containerProgress = $(".preloader__progress") as HTMLElement;
+        this.el = $(".preloader") as HTMLElement;
+        this.elProgress = $(".preloader__progress") as HTMLElement;
 
         this.assetPaths = assetPaths;
     }
@@ -38,7 +37,7 @@ export default class Preloader {
             }
 
             this.assetsLoaded++;
-            this.containerProgress.style.setProperty(
+            this.elProgress.style.setProperty(
                 "--progress",
                 (this.assetsLoaded / this.assetPaths.length).toString()
             );
@@ -54,7 +53,7 @@ export default class Preloader {
 
     dispose() {
         gsap.fromTo(
-            this.container,
+            this.el,
             {
                 opacity: 1,
             },
@@ -62,7 +61,7 @@ export default class Preloader {
                 opacity: 0,
                 ease: "Expo.easeInOut",
                 onComplete: () => {
-                    this.container.remove();
+                    this.el.remove();
                 },
                 delay: 1,
             }
