@@ -7,7 +7,6 @@ import GardenModel from "./components/GardenModel";
 
 import GardenFloor from "./components/GardenFloor";
 import { defaultView } from "./sceneData";
-import Cursor from "./components/view/Cursor";
 
 // initialize assets
 const preloader = new Preloader({

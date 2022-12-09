@@ -1,9 +1,10 @@
-import { Object3D, Vector3 } from "three";
+import { MathUtils, Object3D, Vector3 } from "three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 
 import Component from "../engine/Component";
 import LanternLight from "./LanternLight";
 import { defaultView, lanternData, lanternNames } from "../sceneData";
+import LanternLabel from "./view/LanternLabel";
 
 interface GardenModelProps {
     gltf: GLTF;
@@ -16,8 +17,10 @@ export default class GardenModel extends Component {
     private animationOffsets: number[] = [];
     private initialPositions: Vector3[] = [];
 
-    private targetRotationX: number = 0;
+    private targetRotation: number = 0;
     private selectedLantern: string | null = null;
+
+    private lanternLabel = new LanternLabel();
 
     constructor({ gltf }: GardenModelProps) {
         super();
@@ -69,18 +72,23 @@ export default class GardenModel extends Component {
                     lantern.rotation,
                     lantern.target
                 );
+
+                this.lanternLabel.setLabel(lantern.label);
+                this.lanternLabel.show();
             } else {
                 this.canvas.animateView(
                     defaultView.position,
                     defaultView.rotation,
                     defaultView.target
                 );
+
+                this.lanternLabel.hide();
             }
         });
     }
 
     private updateCursor() {
-        if (this.canvas.pointerInView()) {
+        if (this.canvas.pointer.inContainer) {
             if (this.selectedLantern) {
                 this.canvas.cursor.expand();
                 this.canvas.container.style.cursor = "pointer";
@@ -123,9 +131,23 @@ export default class GardenModel extends Component {
         }
     }
 
+    /**
+     * Rotate scene by moving cursor
+     */
+    private updateRotation() {
+        this.targetRotation = MathUtils.lerp(
+            this.object.rotation.y,
+            this.canvas.pointer.position.x * 0.05,
+            0.05
+        );
+
+        this.object.rotation.y = this.targetRotation;
+    }
+
     update() {
         this.updateSelectedLantern();
         this.updateLanternPositions();
         this.updateCursor();
+        this.updateRotation();
     }
 }

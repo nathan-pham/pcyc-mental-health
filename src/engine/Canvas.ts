@@ -19,6 +19,7 @@ import gsap from "gsap";
 import Component from "./Component";
 import { $ } from "./html";
 import Cursor from "../components/view/Cursor";
+import Pointer from "../components/Pointer";
 
 interface CanvasProps {
     container: string;
@@ -27,7 +28,6 @@ interface CanvasProps {
 
 export default class Canvas {
     public readonly container: HTMLElement;
-    private containerBbox: DOMRect;
 
     // three.js components
     private renderer: WebGLRenderer;
@@ -46,14 +46,11 @@ export default class Canvas {
     raycaster = new Raycaster();
     intersections: Intersection<Object3D>[] = [];
 
-    cursor = new Cursor();
-
-    pointer = new Vector2();
-    pointerDown = false;
+    cursor: Cursor;
+    pointer: Pointer;
 
     constructor({ container, controls }: CanvasProps) {
         this.container = $(container)! as HTMLElement;
-        this.containerBbox = this.container.getBoundingClientRect();
 
         this.renderer = this.createRenderer();
         this.camera = this.createCamera();
@@ -68,8 +65,10 @@ export default class Canvas {
             );
         }
 
+        this.cursor = new Cursor();
+        this.pointer = new Pointer({ container: this.container });
+
         this.initEventListeners();
-        this.cursor.core();
     }
 
     private createComposer() {
@@ -176,30 +175,14 @@ export default class Canvas {
      */
     private initEventListeners() {
         addEventListener("resize", () => {
-            this.containerBbox = this.container.getBoundingClientRect();
             this.renderer.setSize(this.size.width, this.size.height);
             this.composer.setSize(this.size.width, this.size.height);
             this.camera.aspect = this.size.aspectRatio;
             this.camera.updateProjectionMatrix();
         });
 
-        addEventListener("pointermove", (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
-
-            this.pointer.x =
-                ((x - this.containerBbox.left) / this.size.width) * 2 - 1;
-            this.pointer.y =
-                -((y - this.containerBbox.top) / this.size.height) * 2 + 1;
-        });
-
-        addEventListener("pointerdown", () => {
-            this.pointerDown = true;
-        });
-
-        addEventListener("pointerup", () => {
-            this.pointerDown = false;
-        });
+        this.cursor.core();
+        this.pointer.initEventListeners();
     }
 
     /**
@@ -210,7 +193,7 @@ export default class Canvas {
 
         const animate = () => {
             // update raycaster
-            this.raycaster.setFromCamera(this.pointer, this.camera);
+            this.raycaster.setFromCamera(this.pointer.position, this.camera);
             this.intersections = this.raycaster.intersectObjects(
                 this.scene.children,
                 true
@@ -270,14 +253,5 @@ export default class Canvas {
 
             this.controls.update();
         }
-    }
-
-    pointerInView() {
-        return (
-            this.pointer.x >= -1 &&
-            this.pointer.x <= 1 &&
-            this.pointer.y >= -1 &&
-            this.pointer.y <= 1
-        );
     }
 }
