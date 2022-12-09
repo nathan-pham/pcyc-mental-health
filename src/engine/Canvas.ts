@@ -93,8 +93,9 @@ export default class Canvas {
      * @returns Three.js renderer
      */
     private createRenderer() {
-        const renderer = new WebGLRenderer();
+        const renderer = new WebGLRenderer({ antialias: true });
         renderer.setSize(this.size.width, this.size.height);
+        renderer.setPixelRatio(devicePixelRatio);
 
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = PCFSoftShadowMap;

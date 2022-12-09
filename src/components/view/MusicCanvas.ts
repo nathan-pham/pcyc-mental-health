@@ -7,6 +7,7 @@ interface MusicCanvasProps {
     barsCount?: number;
 }
 
+// https://threejs.org/docs/#api/en/audio/AudioAnalyser
 export default class MusicCanvas extends ComponentView {
     private container: HTMLElement;
     private canvas: HTMLCanvasElement;
