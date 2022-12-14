@@ -91,13 +91,38 @@
     flex: 0 0 35%;
 }
 
-.hero__content > h1 {
+/* Page Component */
+.page__title {
     margin: 2.75rem 0 0 0;
 }
 
-.hero__content > p {
+.page__subtitle {
     margin: 1rem 0 0 0;
     color: #666;
+}
+
+.page {
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    width: 100%;
+    display: none;
+}
+
+.page[data-active] {
+    display: flex;
+}
+
+.page__icon {
+    border-radius: 0.75rem;
+    background-color: white;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.125);
+    border: 1px solid #eee;
 }
 
 .hero__canvas {

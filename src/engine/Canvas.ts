@@ -209,7 +209,10 @@ export default class Canvas {
      * Add necessary event listeners
      */
     private initEventListeners() {
-        addEventListener("resize", () => this.resizeRenderer());
+        addEventListener("resize", () => {
+            this.resizeRenderer();
+            this.pointer.resize();
+        });
         this.resizeRenderer();
 
         // this.addView(this.cursor);

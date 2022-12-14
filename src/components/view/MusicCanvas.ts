@@ -51,9 +51,13 @@ export default class MusicCanvas extends ComponentView {
     }
 
     private play() {
-        this.music.play();
-        this.playing = true;
-        this.targetHeight = 10;
+        try {
+            this.music.play();
+            this.playing = true;
+            this.targetHeight = 10;
+        } catch (e) {
+            this.stop();
+        }
     }
 
     private stop() {

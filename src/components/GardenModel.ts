@@ -5,6 +5,7 @@ import Component from "../engine/Component";
 import LanternLight from "./LanternLight";
 import { defaultView, lanternData, lanternNames } from "../sceneData";
 import LanternLabel from "./view/LanternLabel";
+import pageManager from "../pages";
 
 interface GardenModelProps {
     gltf: GLTF;
@@ -61,7 +62,9 @@ export default class GardenModel extends Component {
         this.initLanterns();
 
         // add event listeners
-        addEventListener("pointerdown", () => {
+        addEventListener("pointerdown", async () => {
+            if (!this.canvas.pointer.inContainer) return;
+
             if (
                 this.selectedLantern &&
                 lanternData.hasOwnProperty(this.selectedLantern)
@@ -75,6 +78,7 @@ export default class GardenModel extends Component {
 
                 this.lanternLabel.setLabel(lantern.label);
                 this.lanternLabel.show();
+                pageManager.navigateTo(lantern.route);
             } else {
                 this.canvas.animateView(
                     defaultView.position,
@@ -83,19 +87,19 @@ export default class GardenModel extends Component {
                 );
 
                 this.lanternLabel.hide();
+                pageManager.navigateTo("/");
             }
         });
     }
 
     private updateCursor() {
-        if (this.canvas.pointer.inContainer) {
-            if (this.selectedLantern) {
-                this.canvas.cursor.expand();
-                this.canvas.container.style.cursor = "pointer";
-            } else {
-                this.canvas.cursor.shrink();
-                this.canvas.container.style.cursor = "auto";
-            }
+        if (!this.canvas.pointer.inContainer) return;
+        if (this.selectedLantern) {
+            this.canvas.cursor.expand();
+            this.canvas.container.style.cursor = "pointer";
+        } else {
+            this.canvas.cursor.shrink();
+            this.canvas.container.style.cursor = "auto";
         }
     }
 

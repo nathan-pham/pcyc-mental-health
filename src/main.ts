@@ -1,13 +1,13 @@
 import "./css/globals.css";
 import "./css/index.css";
 
-import Preloader from "./components/view/Preloader";
 import Canvas from "./engine/Canvas";
 import GardenModel from "./components/GardenModel";
-
 import GardenFloor from "./components/GardenFloor";
-import { defaultView } from "./sceneData";
 import MusicCanvas from "./components/view/MusicCanvas";
+import Preloader from "./components/view/Preloader";
+import { defaultView } from "./sceneData";
+import pageManager from "./pages";
 
 // initialize classes
 const preloader = new Preloader({
@@ -26,13 +26,15 @@ const music = new MusicCanvas({
     music: preloader.assets["/silk_touch.mp3"],
 });
 
-preloader.onComplete(() =>
+preloader.onComplete(() => {
     canvas.animateView(
         defaultView.position,
         defaultView.rotation,
         defaultView.target
-    )
-);
+    );
+
+    pageManager.navigateTo("/", true);
+});
 
 preloader.dispose();
 
@@ -43,23 +45,21 @@ canvas.add(
     new GardenFloor()
 );
 
-// todo: see apps + animate in side view
-// todo: finish apps
-
+// add view is used for html elements using requestAnimationFrame
 canvas.addView(canvas.cursor, music);
 canvas.core();
 
-window.generatePos = () => {
-    const r = (a: number[]) => a.map((a) => parseFloat(a.toFixed(2)));
-    console.log(
-        JSON.stringify({
-            position: r(canvas.camera.position.toArray()),
-            rotation: r(
-                canvas.camera.rotation
-                    .toArray()
-                    .filter((t) => typeof t === "number") as number[]
-            ),
-            target: r(canvas.controls!.target.toArray()),
-        })
-    );
-};
+// window.generatePos = () => {
+//     const r = (a: number[]) => a.map((a) => parseFloat(a.toFixed(2)));
+//     console.log(
+//         JSON.stringify({
+//             position: r(canvas.camera.position.toArray()),
+//             rotation: r(
+//                 canvas.camera.rotation
+//                     .toArray()
+//                     .filter((t) => typeof t === "number") as number[]
+//             ),
+//             target: r(canvas.controls!.target.toArray()),
+//         })
+//     );
+// };

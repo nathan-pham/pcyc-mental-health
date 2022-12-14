@@ -10,11 +10,11 @@ export default class Pointer {
     inContainer = false;
 
     private container: HTMLElement;
-    private containerBbox: DOMRect;
+    private containerBbox!: DOMRect;
 
     constructor({ container }: PointerProps) {
         this.container = container;
-        this.containerBbox = this.container.getBoundingClientRect();
+        this.resize();
     }
 
     get size() {
@@ -24,7 +24,7 @@ export default class Pointer {
         };
     }
 
-    onResize() {
+    resize() {
         this.containerBbox = this.container.getBoundingClientRect();
     }
 
