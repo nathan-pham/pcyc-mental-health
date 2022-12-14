@@ -11,8 +11,10 @@ import MusicCanvas from "./components/view/MusicCanvas";
 
 // initialize classes
 const preloader = new Preloader({
-    assetPaths: ["/garden/scene.gltf"],
+    assetPaths: ["/garden/scene.gltf", "/silk_touch.mp3"],
 });
+
+await preloader.load();
 
 const canvas = new Canvas({
     container: ".hero__canvas",
@@ -21,10 +23,9 @@ const canvas = new Canvas({
 
 const music = new MusicCanvas({
     container: ".hero__content__music",
+    music: preloader.assets["/silk_touch.mp3"],
 });
 
-// load assets
-await preloader.load();
 preloader.onComplete(() =>
     canvas.animateView(
         defaultView.position,
@@ -32,6 +33,7 @@ preloader.onComplete(() =>
         defaultView.target
     )
 );
+
 preloader.dispose();
 
 canvas.add(

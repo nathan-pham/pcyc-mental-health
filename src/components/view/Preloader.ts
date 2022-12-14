@@ -26,18 +26,7 @@ export default class Preloader {
 
     async load() {
         for (const assetPath of this.assetPaths) {
-            const extension = assetPath.split(".").pop()?.toLowerCase();
-            switch (extension) {
-                case "gltf":
-                    this.assets[assetPath] = await this.loadGLTF(assetPath);
-                    break;
-
-                default:
-                    throw new Error(
-                        `Failed to load ${assetPath}, no loader defined`
-                    );
-            }
-
+            this.assets[assetPath] = await this.decideLoader(assetPath);
             this.assetsLoaded++;
             this.elProgress.style.setProperty(
                 "--progress",
@@ -46,10 +35,34 @@ export default class Preloader {
         }
     }
 
+    decideLoader(assetPath: string) {
+        const extension = assetPath.split(".").pop()?.toLowerCase();
+        switch (extension) {
+            case "gltf":
+                return this.loadGLTF(assetPath);
+
+            case "mp3":
+                return this.loadAudio(assetPath);
+
+            default:
+                throw new Error(
+                    `Failed to load ${assetPath}, no loader defined`
+                );
+        }
+    }
+
     loadGLTF(assetPath: string) {
         const loader = new GLTFLoader();
         return new Promise((resolve) => {
             loader.load(assetPath, (gltf) => resolve(gltf));
+        });
+    }
+
+    loadAudio(assetPath: string) {
+        const audio = new Audio();
+        return new Promise((resolve) => {
+            audio.addEventListener("canplay", () => resolve(audio));
+            audio.src = assetPath;
         });
     }
 

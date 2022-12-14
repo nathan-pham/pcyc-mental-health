@@ -1,10 +1,11 @@
-import { MathUtils } from "three";
+import { Audio, MathUtils } from "three";
 import ComponentView from "../../engine/ComponentView";
 import { $ } from "../../engine/html";
 
 interface MusicCanvasProps {
     container: string;
     barsCount?: number;
+    music: Audio;
 }
 
 // https://threejs.org/docs/#api/en/audio/AudioAnalyser
@@ -17,10 +18,16 @@ export default class MusicCanvas extends ComponentView {
     private barSize = 6;
     private counter = 0;
 
-    constructor({ container, barsCount = 10 }: MusicCanvasProps) {
+    private music: Audio;
+    private playing = false;
+    private targetHeight = 0;
+    private height = 0;
+
+    constructor({ container, music, barsCount = 10 }: MusicCanvasProps) {
         super();
         this.container = $(container) as HTMLElement;
         this.barsCount = barsCount;
+        this.music = music;
 
         // init canvas
         const { canvas, ctx } = this.createCanvas();
@@ -28,6 +35,7 @@ export default class MusicCanvas extends ComponentView {
         this.ctx = ctx;
 
         this.initEventListeners();
+        this.initMusic();
     }
 
     get size() {
@@ -37,7 +45,29 @@ export default class MusicCanvas extends ComponentView {
         };
     }
 
-    private initEventListeners() {}
+    private initMusic() {
+        this.music.loop = true;
+        this.play();
+    }
+
+    private play() {
+        this.music.play();
+        this.playing = true;
+        this.targetHeight = 10;
+    }
+
+    private stop() {
+        this.music.pause();
+        this.playing = false;
+        this.targetHeight = 2;
+    }
+
+    private initEventListeners() {
+        this.canvas.addEventListener("click", () => {
+            this.playing = !this.playing;
+            this.playing ? this.play() : this.stop();
+        });
+    }
 
     private createCanvas() {
         const canvas = document.createElement("canvas");
@@ -77,6 +107,7 @@ export default class MusicCanvas extends ComponentView {
 
     update() {
         this.counter += 0.03;
+        this.height = MathUtils.lerp(this.height, this.targetHeight, 0.1);
 
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.size.width, this.size.height);
@@ -86,7 +117,7 @@ export default class MusicCanvas extends ComponentView {
                 this.size.width,
                 (i + 0.5) / this.barsCount
             );
-            this.drawBar(x, (Math.sin(i + this.counter) + 1) * 10);
+            this.drawBar(x, (Math.sin(i + this.counter) + 1) * this.height);
         }
     }
 }
