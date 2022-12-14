@@ -39,6 +39,7 @@ export default class Preloader {
         const extension = assetPath.split(".").pop()?.toLowerCase();
         switch (extension) {
             case "gltf":
+            case "glb":
                 return this.loadGLTF(assetPath);
 
             case "mp3":

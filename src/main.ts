@@ -37,11 +37,14 @@ preloader.onComplete(() =>
 preloader.dispose();
 
 canvas.add(
-    // new GardenModel({
-    //     gltf: preloader.assets["/garden/scene.gltf"],
-    // }),
+    new GardenModel({
+        gltf: preloader.assets["/garden/scene.gltf"],
+    }),
     new GardenFloor()
 );
+
+// todo: see apps + animate in side view
+// todo: finish apps
 
 canvas.addView(canvas.cursor, music);
 canvas.core();

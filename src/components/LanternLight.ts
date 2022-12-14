@@ -56,14 +56,3 @@ export default class LanternLight extends Component {
         return this.spotLightRef;
     }
 }
-
-// createComponent(() => {
-
-// }),
-// createComponent(() => {
-//     // create spotlight
-
-//     this.spotLights.push(spotLight);
-
-//     return spotLight;
-// })

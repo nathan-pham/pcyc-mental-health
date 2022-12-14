@@ -27,6 +27,8 @@ interface CanvasProps {
     controls: boolean;
 }
 
+const DOWN_SCALE = 3;
+
 export default class Canvas {
     public readonly container: HTMLElement;
 
@@ -71,6 +73,7 @@ export default class Canvas {
         this.pointer = new Pointer({ container: this.container });
 
         this.initEventListeners();
+        this.resizeRenderer();
     }
 
     private createComposer() {
@@ -94,7 +97,11 @@ export default class Canvas {
      */
     private createRenderer() {
         const renderer = new WebGLRenderer({ antialias: true });
-        renderer.setSize(this.size.width, this.size.height);
+        renderer.setSize(
+            this.size.width / DOWN_SCALE,
+            this.size.height / DOWN_SCALE,
+            false
+        );
         renderer.setPixelRatio(devicePixelRatio);
 
         renderer.shadowMap.enabled = true;
@@ -184,16 +191,26 @@ export default class Canvas {
         };
     }
 
+    private resizeRenderer() {
+        this.renderer.setSize(
+            this.size.width / DOWN_SCALE,
+            this.size.height / DOWN_SCALE,
+            false
+        );
+        this.composer.setSize(
+            this.size.width / DOWN_SCALE,
+            this.size.height / DOWN_SCALE
+        );
+        this.camera.aspect = this.size.aspectRatio;
+        this.camera.updateProjectionMatrix();
+    }
+
     /**
      * Add necessary event listeners
      */
     private initEventListeners() {
-        addEventListener("resize", () => {
-            this.renderer.setSize(this.size.width, this.size.height);
-            this.composer.setSize(this.size.width, this.size.height);
-            this.camera.aspect = this.size.aspectRatio;
-            this.camera.updateProjectionMatrix();
-        });
+        addEventListener("resize", () => this.resizeRenderer());
+        this.resizeRenderer();
 
         // this.addView(this.cursor);
         this.pointer.initEventListeners();
