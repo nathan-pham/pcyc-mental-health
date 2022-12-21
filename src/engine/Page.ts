@@ -18,6 +18,10 @@ export default class Page {
         return this.id;
     }
 
+    getPage() {
+        return $(this.id) as HTMLElement;
+    }
+
     private createTimeline() {
         return gsap
             .timeline({
@@ -34,9 +38,6 @@ export default class Page {
                     x: 0,
                     stagger: 0.1,
                     ease: "Expo.easeInOut",
-                    onComplete: () => {
-                        console.log("okklksdfjlskdf");
-                    },
                 }
             );
     }

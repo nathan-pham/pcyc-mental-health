@@ -1,5 +1,6 @@
 import "./css/globals.css";
 import "./css/index.css";
+import "./css/pages.css";
 
 import Canvas from "./engine/Canvas";
 import GardenModel from "./components/GardenModel";

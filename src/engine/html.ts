@@ -1,5 +1,18 @@
-export const $ = (query: string) => document.querySelector(query);
-export const $$ = (query: string) => [...document.querySelectorAll(query)];
+export const $ = (parent: HTMLElement | string, query: string = "") => {
+    if (parent && parent instanceof HTMLElement) {
+        return parent.querySelector(query)!;
+    }
+
+    return document.querySelector(parent)!;
+};
+
+export const $$ = (parent: HTMLElement | string, query: string = "") => {
+    if (parent && parent instanceof HTMLElement) {
+        return [...parent.querySelectorAll(query)];
+    }
+
+    return [...document.querySelectorAll(parent)];
+};
 
 const html = (
     tag: string,
