@@ -1,7 +1,7 @@
 :root {
     --bg: #ffffff;
     --shadow: #d7d8ce74;
-    --border: #ffffff;
+    --border: #eee;
 }
 
 html,
@@ -32,22 +32,23 @@ h1 {
 }
 
 /* Button Component */
-.button.button-default {
+.button-default {
     padding: 0.75rem 2rem;
     border-radius: 10rem;
     outline: none;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: medium;
     background: linear-gradient(#555, #000);
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     color: white;
     display: flex;
     align-items: center;
     gap: 1rem;
+    font-size: 100%;
     box-shadow: 0 0.5rem 1rem var(--shadow);
 }
 
-.button.button-circle {
+.button-circle {
     width: 2.75rem;
     height: 2.75rem;
     display: grid;
@@ -56,7 +57,7 @@ h1 {
     padding: 0;
 }
 
-.button.button-default div {
+.button-default div {
     background: white;
     width: 1.5rem;
     height: 1.5rem;
@@ -66,7 +67,7 @@ h1 {
     border-radius: 10rem;
 }
 
-.button.button-play {
+.button-play {
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -76,7 +77,7 @@ h1 {
     background-color: transparent;
 }
 
-.button.button-play div {
+.button-play div {
     width: 2.75rem;
     height: 2.75rem;
     display: grid;
@@ -87,7 +88,7 @@ h1 {
 }
 
 /* Input Component */
-.input.input-default {
+.input-default {
     border-radius: 10rem;
     width: 100%;
     outline: none;
@@ -95,19 +96,38 @@ h1 {
     align-items: center;
     justify-content: stretch;
     overflow: hidden;
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     box-shadow: 0 0.5rem 1rem var(--shadow);
 }
 
-.input.input-default input {
+.input-default input {
     height: 100%;
     width: 100%;
+    font-size: 100%;
     background: transparent;
     border: none;
     outline: none;
     padding: 0 1.25rem;
 }
 
-.input.input-default button {
+.input-default button {
     flex-shrink: 0;
+}
+
+.textarea-default {
+    min-height: 2.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    resize: vertical;
+    font-size: 100%;
+    font-family: inherit;
+    border-radius: 1rem;
+    width: 100%;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 0.5rem 1rem var(--shadow);
 }

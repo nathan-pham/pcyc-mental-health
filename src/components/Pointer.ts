@@ -55,9 +55,3 @@ export default class Pointer {
         });
     }
 }
-
-// {
-//     position: new Vector2(),
-//     down: false,
-//     inContainer: false,
-// }

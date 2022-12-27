@@ -4,6 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>pcyc mental health</title>
+
+        <script
+            async
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdkA-nvTJxO9Ghy81QHZX3rQ9nGaLx0fk&libraries=visualization"
+        ></script>
     </head>
     <body>
         <div id="app">
@@ -18,6 +23,7 @@
             </div>
             <div class="hero">
                 <main class="hero__content">
+                    <!-- Chat Page -->
                     <div class="page" id="page-chat">
                         <div class="page__icon">
                             <svg
@@ -49,10 +55,10 @@
                             </div>
                         </section>
                         <form class="mt-1">
-                            <div class="input input-default">
+                            <div class="input-default">
                                 <input type="text" />
                                 <button
-                                    class="button button-default button-circle"
+                                    class="button-default button-circle"
                                     data-expand
                                 >
                                     <svg
@@ -73,6 +79,8 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Page Classification -->
                     <div class="page" id="page-classification">
                         <div class="page__icon">
                             <svg
@@ -97,10 +105,39 @@
                             depression.
                         </p>
                         <form>
-                            <input type="text" />
-                            <button class="button mt-1">Submit</button>
+                            <textarea class="textarea-default"></textarea>
+                            <button class="button-default mt-1">Submit</button>
                         </form>
                     </div>
+
+                    <!-- Suicide Map -->
+                    <div class="page" id="page-map">
+                        <div class="page__icon">
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 15 15"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M10.3285 1.13607C10.1332 0.940809 9.81662 0.940808 9.62136 1.13607C9.42609 1.33133 9.42609 1.64792 9.62136 1.84318L10.2744 2.49619L5.42563 6.13274L4.31805 5.02516C4.12279 4.8299 3.80621 4.8299 3.61095 5.02516C3.41569 5.22042 3.41569 5.537 3.61095 5.73226L5.02516 7.14648L6.08582 8.20714L2.81545 11.4775C2.62019 11.6728 2.62019 11.9894 2.81545 12.1846C3.01072 12.3799 3.3273 12.3799 3.52256 12.1846L6.79293 8.91425L7.85359 9.97491L9.2678 11.3891C9.46306 11.5844 9.77965 11.5844 9.97491 11.3891C10.1702 11.1939 10.1702 10.8773 9.97491 10.682L8.86733 9.57443L12.5039 4.7257L13.1569 5.37871C13.3522 5.57397 13.6687 5.57397 13.864 5.37871C14.0593 5.18345 14.0593 4.86687 13.864 4.6716L12.8033 3.61094L11.3891 2.19673L10.3285 1.13607ZM6.13992 6.84702L10.9887 3.21047L11.7896 4.01142L8.15305 8.86015L6.13992 6.84702Z"
+                                    fill="currentColor"
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </div>
+                        <h1 class="page__title">Suicide Map</h1>
+                        <p class="page__subtitle">
+                            Suicide rates are based on the number suicides per
+                            100,000 people. Become more aware of the latest
+                            statistics so you can be a positive force in your
+                            community.
+                        </p>
+                        <div class="map"></div>
+                    </div>
+
                     <div class="page" id="page-hero" data-active>
                         <header>
                             <div class="hero__content__music" data-expand></div>
@@ -115,7 +152,7 @@
                             about their mental health. Start by clicking a
                             glowing lantern.
                         </p>
-                        <button class="button button-default mt-1" data-expand>
+                        <button class="button-default mt-1" data-expand>
                             See Apps
                             <div>
                                 <svg

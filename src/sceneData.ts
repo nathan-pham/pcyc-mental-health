@@ -33,7 +33,7 @@ export const lanternData: Record<string, LanternRecord> = {
         rotation: [-2.94, 0.79, 2.99],
         target: [-1.96, 3.16, 0.8],
         label: "Suicide Map",
-        route: "/",
+        route: "/map",
     },
     Cylinder009: {
         position: [0.8, 4.43, -0.74],
