@@ -197,25 +197,33 @@ export default class Canvas {
             this.size.height / DOWN_SCALE,
             false
         );
+
         this.composer.setSize(
             this.size.width / DOWN_SCALE,
             this.size.height / DOWN_SCALE
         );
-        this.camera.aspect = this.size.aspectRatio;
-        this.camera.updateProjectionMatrix();
+
+        // only update camera if aspect ratio is different
+        if (this.camera.aspect !== this.size.aspectRatio) {
+            this.camera.aspect = this.size.aspectRatio;
+            this.camera.updateProjectionMatrix();
+        }
     }
 
     /**
      * Add necessary event listeners
      */
     private initEventListeners() {
-        addEventListener("resize", () => {
-            this.resizeRenderer();
-            this.pointer.resize();
-        });
-        this.resizeRenderer();
+        // new ResizeObserver(() => {
+        //     this.resizeRenderer();
+        //     this.pointer.resize();
+        // }).observe(this.container);
 
-        // this.addView(this.cursor);
+        // addEventListener("resize", () => {
+        //     this.resizeRenderer();
+        // });
+
+        this.resizeRenderer();
         this.pointer.initEventListeners();
     }
 
@@ -226,6 +234,9 @@ export default class Canvas {
         this.clock.start();
 
         const animate = () => {
+            this.resizeRenderer();
+            this.pointer.resize();
+
             // update raycaster
             this.raycaster.setFromCamera(this.pointer.position, this.camera);
             this.intersections = this.raycaster.intersectObjects(

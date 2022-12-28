@@ -3,14 +3,18 @@ import { $ } from "./html";
 
 interface PageProps {
     id: string;
+    route: string;
 }
 
 export default class Page {
     private id: string = "unknown page";
+    private route: string = "/";
     private tl: gsap.core.Timeline;
 
-    constructor({ id }: PageProps) {
+    constructor({ id, route }: PageProps) {
         this.id = id;
+        this.route = route;
+
         this.tl = this.createTimeline();
     }
 
@@ -22,24 +26,50 @@ export default class Page {
         return $(this.id) as HTMLElement;
     }
 
+    getRoute() {
+        return this.route;
+    }
+
     private createTimeline() {
-        return gsap
-            .timeline({
-                paused: true,
-            })
-            .fromTo(
-                `${this.id} > *`,
+        const tl = gsap.timeline({
+            paused: true,
+        });
+
+        if (this.route == "/") {
+            const heroContent = $(".hero__content") as HTMLDivElement;
+            tl.fromTo(
+                heroContent,
                 {
-                    opacity: 0,
-                    x: -100,
+                    flexBasis:
+                        getComputedStyle(heroContent).getPropertyValue(
+                            "--expand"
+                        ),
                 },
                 {
-                    opacity: 1,
-                    x: 0,
-                    stagger: 0.1,
+                    flexBasis:
+                        getComputedStyle(heroContent).getPropertyValue(
+                            "--default"
+                        ),
                     ease: "Expo.easeInOut",
                 }
             );
+        }
+
+        tl.fromTo(
+            `${this.id} > *`,
+            {
+                opacity: 0,
+                x: -100,
+            },
+            {
+                opacity: 1,
+                x: 0,
+                stagger: 0.1,
+                ease: "Expo.easeInOut",
+            }
+        );
+
+        return tl;
     }
 
     // internal life cycle methods

@@ -70,6 +70,7 @@
 /* Hero Component */
 .hero {
     display: flex;
+    flex-direction: row-reverse;
     gap: 2rem;
     width: 100vw;
     height: 100vh;
@@ -83,12 +84,17 @@
 }
 
 .hero__content {
+    --default: 30%;
+    --expand: 50%;
+
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: flex-start;
     height: 100%;
-    flex: 0 0 35%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    flex-basis: var(--default);
 }
 
 /* Page Component */
@@ -116,7 +122,7 @@
 
 .hero__canvas {
     height: 100%;
-    background-color: #eee;
+    background-color: black;
     position: relative;
     flex: 1 1 100%;
     overflow: hidden;
@@ -131,7 +137,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(transparent, transparent, #000);
+    background: radial-gradient(
+        circle at center,
+        transparent,
+        transparent,
+        #000
+    );
     z-index: 5;
 }
 
@@ -152,6 +163,7 @@
     opacity: 0;
     background-color: var(--bg);
     border: 1px solid black;
+    white-space: nowrap;
 }
 
 /* Music Component */

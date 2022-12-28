@@ -8,9 +8,9 @@ export default class PageManager {
         this.currentRoute = defaultCurrentRoute;
     }
 
-    addPages(pages: Record<string, Page>) {
-        for (const [route, page] of Object.entries(pages)) {
-            this.pages[route] = page;
+    addPages(pages: Page[]) {
+        for (const page of pages) {
+            this.pages[page.getRoute()] = page;
         }
 
         return this;

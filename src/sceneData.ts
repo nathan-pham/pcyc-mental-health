@@ -26,7 +26,7 @@ export const lanternData: Record<string, LanternRecord> = {
         rotation: [-2.73, -0.79, -2.84],
         target: [0.61, 4.04, 1],
         label: "Breathing Sessions",
-        route: "/",
+        route: "/breathe",
     },
     Cylinder010: {
         position: [-0.9, 3.37, -0.22],

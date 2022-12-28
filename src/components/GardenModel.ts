@@ -138,6 +138,7 @@ export default class GardenModel extends Component {
     /**
      * Rotate scene by moving cursor
      */
+    // @ts-ignore
     private updateRotation() {
         this.targetRotation = MathUtils.lerp(
             this.object.rotation.y,
@@ -152,6 +153,8 @@ export default class GardenModel extends Component {
         this.updateSelectedLantern();
         this.updateLanternPositions();
         this.updateCursor();
-        this.updateRotation();
+
+        // TODO: update rotation does not rotate lights with it; fix it
+        // this.updateRotation();
     }
 }
